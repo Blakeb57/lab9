@@ -9,56 +9,86 @@ fill in the rest of the main.
 **********************************************************************/
 #include <stack>
 #include <iostream>
-#include<cstdlib>
+#include <cstdlib>
 #include "calc_useful.h"
 using namespace std;
 
-
-int main(){
+int main()
+{
     char c;
     char tmp;
     int onenum, twonum;
-    int count;
+	int st = 0;
     bool continu = true;
-	// declare an STL stack called nums right here:
+	stack <int> stk;					// declare an STL stack called nums right here:
 
-    cout<<"Please enter your expression:\n";
+	stk.empty();
+	st = 0;
 
-    c = cin.get(); // priming read for the sentinel loop.
-   while(continu==true){
-    while(c != '\n'){
- 	if(isdigit(c)){
-	    cin.putback(c);
-	    cin>>onenum;
-	// stack operation here.
+	cout << "Please enter your expression:\n";
+	c = cin.get(); 					// priming read for the sentinel loop.
 
-	}
-	else if(isop(c)){
-		if(  /* check to see if there's anyting on the stack */){
-			//pop two  numbers from the stack
-			// evaluate them using the evaluate from stack_useful
-			// push result onto the stack
+	while(continu == true)
+	{
+		while(c != '\n')
+		{
+			if(isdigit(c))
+			{
+				cin.putback(c);
+				cin >> onenum;
+				stk.push(onenum);						// stack operation here.
 			}
-			else{
-				cout<<"Error:";
-				cout<<"...  "; // what did this error tell us about the user's expression?
-        			return -1;
-			}
+			else if(isop(c)){
+				if(stk.empty())
+				{
+					cout << "\nWrong Expression";
+					st = 1;
+					break;
+				}
 
+				onenum = stk.top();
+				stk.pop();
+				if(stk.empty())
+				{
+					cout << "\nWrong Expression";
+					st = 1;
+					break;
+				}
+
+				twonum = stk.top();
+				stk.pop();
+				onenum = evaluate(onenum, twonum, c);
+				stk.push(onenum);
+			}
+			c = cin.get(); 					// reading at the bottom of the sentinel loop
+		} 								// bottom of the loop that reads a single expression from the keyboard
+
+		if(stk.empty())
+		{
+			cout << "Wrong Expression";
+			st = 1;
+		}								// output the final result from the top of the stack
+										// but only after you check to make sure there's something on the stack
+		onenum = stk.top();
+		stk.pop();
+		if(!stk.empty())
+		{
+			cout << "Error, Insufficient operators for the operands." << endl;
+			st = 1;
 		}
-	
-	c = cin.get(); // reading at the bottom of the sentinel loop
-    } // bottom of the loop that reads a single expression from the keyboard
 
-	  // output the final result from the top of the stack
-	  // but only after you check to make sure there's something on the stack
-   }
-    cout << "Enter another equation?(y or n)";
-    cin>> tmp;
-    if(tmp=='y' || tmp=='Y')
-	continu=true;
-    else
-	continu=false;
+		if(st == 0)
+		{
+			cout << "The and is: " << onenum << endl;
+		}
 
-    return 0;
+		cout << "Enter another equation?(y or n)";
+		cin >> tmp;
+		if(tmp=='y' || tmp=='Y')
+		continu=true;
+		else
+		continu=false;
+	}
+
+return 0; 
 }
